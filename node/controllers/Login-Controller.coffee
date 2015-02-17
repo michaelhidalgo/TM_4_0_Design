@@ -28,9 +28,12 @@ class Login_Controller
     @.res.redirect(loginPage)
 
   loginUser: ()=>
+    userViewModel ={username: @.req.body.username,errorMessage:''}
+
     if (@.req.body.username == '' or @.req.body.password == '')
         @.req.session.username = undefined;
-        @.res.render(loginPage,{errorMessage:blank_credentials_message})
+        userViewModel.errorMessage=blank_credentials_message
+        @.res.render(loginPage,{viewModel:userViewModel})
         return
 
     #Temp QA logins
@@ -62,10 +65,10 @@ class Login_Controller
               @.req.session.username = undefined
 
               if (loginResponse?.Validation_Results !=null && loginResponse?.Validation_Results?.not_Empty())
-                  @.req.errorMessage  = loginResponse.Validation_Results.first().Message
+                  userViewModel.errorMessage  = loginResponse.Validation_Results.first().Message
               else
-                  @.req.errorMessage  = loginResponse?.Simple_Error_Message
-              @.res.render(loginPage,{errorMessage:@.req.errorMessage})
+                  userViewModel.errorMessage  = loginResponse?.Simple_Error_Message
+              @.res.render(loginPage,{viewModel:userViewModel})
 
   logoutUser: ()=>
     @.req.session.username = undefined
@@ -74,7 +77,7 @@ class Login_Controller
 
   passwordReset: ()=>
     email = @.req.body.email
-
+    console.log (@.req.body.email)
     options = {
                     method: 'post'
                     body: {email: email}
@@ -83,6 +86,7 @@ class Login_Controller
               }
 
     request options, (error, response, body)=>
+
         if (error and error.code=="ENOTFOUND")
             @.res.send('could not connect with TM Uno server');
             return;

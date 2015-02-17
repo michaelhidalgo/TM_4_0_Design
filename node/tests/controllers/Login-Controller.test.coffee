@@ -80,13 +80,14 @@ describe "controllers | test-Login-Controller |", ->
   it 'passwordReset', (done)->
     invoke_Method "passwordReset", { email : 'aaaaaa@teammentor.net'  } ,password_sent,done
 
-  it 'passwordReset (error handling)', (done)->
+  it.only 'passwordReset (error handling)', (done)->
     req =
       body   : {}
     res =
       send: (data)->
         json = data.json_Parse()
         json.statusCode.assert_Is(500)
+        console.log (json.body.Message)
         json.body.Message.assert_Is('Invalid web service call, missing value for parameter: \'email\'.')
         done()
 
