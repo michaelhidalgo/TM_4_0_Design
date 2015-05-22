@@ -2,30 +2,49 @@ nodeAnalytics    = null
 gaCode           = null
 gaSite           = null
 Config           = null
-
+piwikAnalytics   = null
+piwik            = null
 class GoogleAnalytics_Service
 
   dependencies:()->
-    nodeAnalytics = require 'nodealytics'
-    Config        = require('../misc/Config')
+    nodeAnalytics  = require 'nodealytics'
+    Config         = require('../misc/Config')
+    piwikAnalytics = require 'piwik-tracker'
 
-  setup:(callback) =>
-    nodeAnalytics.initialize @.config.gaTrackingId,@.config.gaTrackingSite,(err,res) =>
-      if (err?)
-        callback "Error initializing Google Analytics #{err.message}"
-      else
-        callback undefined
-      return callback
+  setup:() =>
+    piwik = new piwikAnalytics(1, @.trackerUrl)
 
   constructor:(req, res)->
     @.dependencies()
-    @.req      = req
-    @.res      = res
-    @.config   = new Config()
-    @.setup (callback) =>
-      if (callback)
-        console.log (callback)
+    @.req        = req
+    @.res        = res
+    @.config     = new Config()
+    @.trackerUrl = 'http://michaelhidalgo.piwikpro.com/piwik.php'
+    @.siteId     =  1
+    @.baseUrl    = 'http://tmdev01-beta.teammentor.net'
+    @.setup()
 
+  trackUrl: (url) ->
+    fullUrl = 'http://tmdev01-beta.teammentor.net'+url
+    console.log(fullUrl)
+    piwik.track (fullUrl)
+
+  track : (req,res) ->
+    url = req.protocol + '://' + req.get('host') + req.originalUrl
+    console.log (url)
+    piwik.track({
+      url: url,
+      action_name: req.url,
+      _id:req.sessionID.add_5_Random_Letters()
+      ua: req.header('User-Agent'),
+      lang: req.header('Accept-Language'),
+      cvar: JSON.stringify({
+        '1': ['API version', 'v1'],
+        '2': ['HTTP method', req.method]
+      }),
+      cip:req.connection.remoteAddress
+
+    });
 
   trackPage:(pageTitle, url) ->
     nodeAnalytics.trackPage pageTitle,url,(err,res)->
@@ -39,4 +58,3 @@ class GoogleAnalytics_Service
         return "Error tracking Event on Google Analytics #{err.message}"
 
   module.exports =GoogleAnalytics_Service
-

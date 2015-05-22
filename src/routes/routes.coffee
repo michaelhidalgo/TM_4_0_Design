@@ -19,7 +19,7 @@ add_Routes = (express_Service)->
     app.use (req,res,next)->
       logger?.info {url: req.url , ip: req.connection.remoteAddress,  agent: req.headers.agent }
       using new Ga_Service(),->
-        @.trackEvent('Route',"Method #{req.method}, Url #{req.url}")
+        @.track(req,res)
       next()
     #login routes
     
