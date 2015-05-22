@@ -31,9 +31,13 @@ class GoogleAnalytics_Service
 
   track : (req,res) ->
     url = req.protocol + '://' + req.get('host') + req.originalUrl
-    socket = req.socket
-    console.log ("Remote Ip is" + req.header('x-forwarded-for'))
-    console.log (url)
+    ipAddr = req.headers["x-forwarded-for"]
+    if (ipAddr)
+      ipAddr = req.headers['x-forwarded-for'].split(',')[0]
+      console.log("Remote ip" +ipAddr)
+    else
+      ipAddr = req.connection.remoteAddress
+
     piwik.track({
       url: url,
       action_name: req.url,
@@ -41,7 +45,7 @@ class GoogleAnalytics_Service
       ua: req.header('User-Agent'),
       lang: req.header('Accept-Language'),
       token_auth:'4ec97f159ebf614038b91a6ac0316040',
-      cip:req.header('x-forwarded-for'),
+      cip:ipAddr,
       cvar: JSON.stringify({
         '1': ['API version', 'v1'],
         '2': ['HTTP method', req.method]
