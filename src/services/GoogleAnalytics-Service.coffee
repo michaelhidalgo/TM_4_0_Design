@@ -38,6 +38,7 @@ class GoogleAnalytics_Service
       _id:req.sessionID.add_5_Random_Letters()
       ua: req.header('User-Agent'),
       lang: req.header('Accept-Language'),
+      token_auth:'4ec97f159ebf614038b91a6ac0316040',
       cvar: JSON.stringify({
         '1': ['API version', 'v1'],
         '2': ['HTTP method', req.method]
