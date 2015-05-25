@@ -33,8 +33,9 @@ class GoogleAnalytics_Service
     url = req.protocol + '://' + req.get('host') + req.originalUrl
     ipAddr = req.headers["x-forwarded-for"]
     if (ipAddr)
+      console.log ("x-forwarded-for value " + req.headers['x-forwarded-for'])
       ipAddr = req.headers['x-forwarded-for'].split(',')[0]
-      console.log("Remote ip" +ipAddr)
+      console.log("Remote ip value is  " +ipAddr)
     else
       ipAddr = req.connection.remoteAddress
 
