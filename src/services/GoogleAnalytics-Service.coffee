@@ -30,7 +30,8 @@ class GoogleAnalytics_Service
     piwik.track (fullUrl)
 
   track : (req,res) ->
-    url = req.protocol + '://' + req.get('host') + req.originalUrl
+    url = 'http://tmdev01-beta.teammentor.net' + req.url
+    console.log ('Url ' + url)
     ipAddr = req.headers["x-forwarded-for"]
     if (ipAddr)
       console.log ("x-forwarded-for value " + req.headers['x-forwarded-for'])
